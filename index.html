@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlgoStudio Exam Pro — Interactive Algorithm Design & Visual Simulation Hub</title>
+  <meta name="description" content="Master Algorithm Design with step-by-step visual simulations, live pseudocode tracing, asymptotic analysis curves, greedy algorithms, and exam prep quiz." />
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 17 10 11 4 5"></polyline>
+            <line x1="12" y1="19" x2="20" y2="19"></line>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">AlgoStudio Exam Pro</h1>
+        </div>
+        <span class="brand-badge">Visual Notes &amp; Simulator</span>
+      </div>
+
+      <div class="header-actions">
+        <span class="key-hint"><kbd>Space</kbd> Play/Pause</span>
+        <span class="key-hint"><kbd>←</kbd> <kbd>→</kbd> Step</span>
+        <span class="key-hint"><kbd>R</kbd> Reset</span>
+
+        <button id="btn-sound-toggle" class="icon-btn" title="Toggle Synthesizer Sound" aria-label="Toggle Sound">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="app-layout">
+
+    <!-- Sidebar: Syllabus Navigation -->
+    <aside class="app-sidebar">
+      <!-- Searching -->
+      <div class="nav-category">
+        <div class="nav-category-title">
+          <span>1. Searching</span>
+          <span class="algo-tag">2 algos</span>
+        </div>
+        <button class="algo-nav-item active" data-algo="linear">
+          <span>Linear Search</span>
+          <span class="algo-tag">O(n)</span>
+        </button>
+        <button class="algo-nav-item" data-algo="binary">
+          <span>Binary Search</span>
+          <span class="algo-tag">O(log n)</span>
+        </button>
+      </div>
+
+      <!-- Sorting -->
+      <div class="nav-category">
+        <div class="nav-category-title">
+          <span>2. Sorting</span>
+          <span class="algo-tag">5 algos</span>
+        </div>
+        <button class="algo-nav-item" data-algo="selection">
+          <span>Selection Sort</span>
+          <span class="algo-tag">O(n²)</span>
+        </button>
+        <button class="algo-nav-item" data-algo="bubble">
+          <span>Bubble Sort</span>
+          <span class="algo-tag">O(n²)</span>
+        </button>
+        <button class="algo-nav-item" data-algo="insertion">
+          <span>Insertion Sort</span>
+          <span class="algo-tag">O(n²)</span>
+        </button>
+        <button class="algo-nav-item" data-algo="merge">
+          <span>Merge Sort</span>
+          <span class="algo-tag">O(n log n)</span>
+        </button>
+        <button class="algo-nav-item" data-algo="quick">
+          <span>Quick Sort</span>
+          <span class="algo-tag">O(n log n)</span>
+        </button>
+      </div>
+
+      <!-- Asymptotic Analysis -->
+      <div class="nav-category">
+        <div class="nav-category-title">
+          <span>3. Asymptotic Analysis</span>
+        </div>
+        <button class="algo-nav-item" data-algo="asymptotic">
+          <span>Growth Curves &amp; Loops</span>
+          <span class="algo-tag">O / Ω / Θ</span>
+        </button>
+      </div>
+
+      <!-- Greedy Algorithms -->
+      <div class="nav-category">
+        <div class="nav-category-title">
+          <span>4. Greedy Algorithms</span>
+          <span class="algo-tag">4 patterns</span>
+        </div>
+        <button class="algo-nav-item" data-algo="coinChange">
+          <span>Coin Change</span>
+          <span class="algo-tag">Heuristic</span>
+        </button>
+        <button class="algo-nav-item" data-algo="knapsack">
+          <span>Fractional Knapsack</span>
+          <span class="algo-tag">O(n log n)</span>
+        </button>
+        <button class="algo-nav-item" data-algo="activitySelection">
+          <span>Activity Selection</span>
+          <span class="algo-tag">Gantt</span>
+        </button>
+        <button class="algo-nav-item" data-algo="jobSequencing">
+          <span>Job Sequencing</span>
+          <span class="algo-tag">Deadlines</span>
+        </button>
+      </div>
+
+      <!-- Simulation Pattern -->
+      <div class="nav-category">
+        <div class="nav-category-title">
+          <span>5. Simulation</span>
+        </div>
+        <button class="algo-nav-item" data-algo="simulation">
+          <span>8-Step General Engine</span>
+          <span class="algo-tag">Event Flow</span>
+        </button>
+      </div>
+
+      <!-- Exam Prep & Quiz -->
+      <div class="nav-category">
+        <div class="nav-category-title">
+          <span>6. Revision &amp; Quiz</span>
+        </div>
+        <button class="algo-nav-item" data-algo="revision">
+          <span>Master Sheet &amp; Practice Quiz</span>
+          <span class="algo-tag">Test Prep</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-stage">
+
+      <!-- Header & Complexity Banner -->
+      <section class="stage-header-card">
+        <div class="title-row">
+          <div>
+            <h2 id="algo-main-title" class="algo-title">1.A Linear Search</h2>
+            <p id="algo-main-subtitle" class="algo-subtitle">Check elements one by one until the target key is found.</p>
+          </div>
+        </div>
+
+        <div id="complexity-banner" class="complexity-grid">
+          <div class="comp-card best">
+            <span class="comp-label">Best Time</span>
+            <span id="comp-best" class="comp-value">O(1)</span>
+          </div>
+          <div class="comp-card">
+            <span class="comp-label">Average Time</span>
+            <span id="comp-avg" class="comp-value">O(n)</span>
+          </div>
+          <div class="comp-card worst">
+            <span class="comp-label">Worst Time</span>
+            <span id="comp-worst" class="comp-value">O(n)</span>
+          </div>
+          <div class="comp-card space">
+            <span class="comp-label">Space Complexity</span>
+            <span id="comp-space" class="comp-value">O(1)</span>
+          </div>
+          <div class="comp-note-cell">
+            <strong>Exam Note:</strong> <span id="comp-note">Sequential scan; best when target is first element.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Standard Algorithm Visualizer Stage -->
+      <div id="algo-stage-container">
+        
+        <!-- Controls Bar -->
+        <section class="controls-card">
+          <div class="control-buttons-row">
+            <div class="playback-controls">
+              <button id="btn-first" class="btn btn-secondary btn-sm" title="Jump to First Step">⏮</button>
+              <button id="btn-prev" class="btn btn-secondary btn-sm" title="Previous Step">◀</button>
+              <button id="btn-play" class="btn btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Play
+              </button>
+              <button id="btn-next" class="btn btn-secondary btn-sm" title="Next Step">▶</button>
+              <button id="btn-last" class="btn btn-secondary btn-sm" title="Jump to Last Step">⏭</button>
+              <button id="btn-reset" class="btn btn-secondary btn-sm" title="Reset">🔁 Reset</button>
+            </div>
+
+            <div class="scrubber-group">
+              <input type="range" id="step-scrubber" min="0" max="10" value="0" />
+              <span id="step-indicator" class="step-indicator-text">Step 0 / 0</span>
+            </div>
+
+            <div>
+              <select id="speed-select" class="select-speed" title="Animation Playback Speed">
+                <option value="0.5">0.5x Speed</option>
+                <option value="1" selected>1.0x Speed</option>
+                <option value="1.75">1.75x Speed</option>
+                <option value="2.5">2.5x Speed</option>
+                <option value="4">4.0x Speed</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Input Panel & Quick Presets -->
+          <div class="io-panel-container">
+            <div class="io-header">
+              <div class="io-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Input Parameters &amp; Presets
+              </div>
+              <div id="quick-presets-container" class="quick-presets-list">
+                <!-- Dynamically populated per algorithm -->
+              </div>
+            </div>
+
+            <!-- Custom Form Inputs for All Algorithms -->
+            <div id="dynamic-input-form" class="dynamic-input-form-grid">
+              <!-- Dynamically rendered by app.js -->
+            </div>
+
+            <div class="input-actions-bar">
+              <button id="btn-apply-input" class="btn btn-accent btn-sm">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Apply &amp; Run Input
+              </button>
+              <button id="btn-random-input" class="btn btn-secondary btn-sm">🎲 Randomize</button>
+              <button id="btn-reset-exam-input" class="btn btn-secondary btn-sm">✨ Reset to Exam Example</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Live Output & Performance Console -->
+        <section class="output-console-card">
+          <div class="output-console-header">
+            <div class="output-console-title">
+              <span class="status-indicator-dot"></span>
+              Live Output &amp; Performance Console
+            </div>
+            <button id="btn-copy-output" class="btn-copy-small" title="Copy Output to Clipboard">
+              📋 Copy Output Summary
+            </button>
+          </div>
+
+          <div class="output-console-grid">
+            <div class="output-metric-box primary-result">
+              <span class="metric-label">Algorithm Result / Return Value</span>
+              <div id="out-result-value" class="metric-big-val">Initializing...</div>
+            </div>
+
+            <div class="output-metric-box">
+              <span class="metric-label">Total Comparisons</span>
+              <div id="out-comparisons-count" class="metric-val text-cyan">0</div>
+            </div>
+
+            <div class="output-metric-box">
+              <span class="metric-label">Swaps / Operations</span>
+              <div id="out-swaps-count" class="metric-val text-amber">0</div>
+            </div>
+
+            <div class="output-metric-box case-box">
+              <span class="metric-label">Triggered Case &amp; Analysis</span>
+              <div id="out-complexity-case" class="metric-val-case">Evaluating...</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Visualizer Area -->
+        <section class="visualizer-card" style="margin-top: 1.5rem;">
+          <div class="step-status-bar">
+            <div id="state-step-title" class="step-status-title">Step 0: Initialization</div>
+            <div id="state-step-desc" class="step-status-desc">Target key = 6. Searching through array of 7 elements.</div>
+          </div>
+
+          <!-- Dynamic Visualizer Canvas / Array Bar Stage -->
+          <div id="array-visual-container"></div>
+        </section>
+
+        <!-- Lower Details: Pseudocode and Live Exam Table -->
+        <div class="details-split-grid" style="margin-top: 1.5rem;">
+          <!-- Pseudocode Line Tracker -->
+          <section class="panel-card">
+            <div class="panel-header">
+              <span class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                Pseudocode Execution Tracker
+              </span>
+              <span class="algo-tag">Active Line Glowing</span>
+            </div>
+            <div id="pseudocode-content" class="pseudocode-box"></div>
+          </section>
+
+          <!-- Exam Step-by-Step Table -->
+          <section class="panel-card">
+            <div class="panel-header">
+              <span class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                Exam Step-by-Step Table
+              </span>
+              <span class="algo-tag">Matches PDF Notes</span>
+            </div>
+            <div class="exam-table-container">
+              <table class="exam-table">
+                <thead>
+                  <tr>
+                    <th style="width: 120px;">Step / Pass</th>
+                    <th>Array State &amp; Decision</th>
+                  </tr>
+                </thead>
+                <tbody id="exam-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+      </div>
+
+      <!-- Asymptotic Analysis Stage (Hidden by default) -->
+      <div id="asymptotic-stage-container" class="asymptotic-stage-view" style="display: none;">
+        <!-- Curves & Bounds -->
+        <section class="asymptotic-chart-card">
+          <div class="title-row">
+            <div>
+              <h3 style="font-size: 1.3rem; font-weight: 800; color: #fff;">Complexity Growth Curves</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">
+                Visualizing growth rate: O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(2ⁿ)
+              </p>
+            </div>
+          </div>
+
+          <div class="canvas-container">
+            <canvas id="asymptotic-canvas" width="700" height="360"></canvas>
+          </div>
+
+          <div class="asymptotic-slider-row">
+            <label for="asymptotic-n-slider" style="font-size: 0.9rem; font-weight: 700;">Select Input Size (n = <span id="asymptotic-n-val" class="text-cyan">16</span>):</label>
+            <input type="range" id="asymptotic-n-slider" min="1" max="32" value="16" />
+          </div>
+
+          <!-- Calculated ops table -->
+          <table class="asymptotic-calc-table">
+            <thead>
+              <tr>
+                <th>Complexity Class</th>
+                <th>Formula</th>
+                <th>Calculated Operations for n</th>
+                <th>Speed Category</th>
+                <th>Typical Exam Example</th>
+              </tr>
+            </thead>
+            <tbody id="asymptotic-calc-body"></tbody>
+          </table>
+        </section>
+
+        <!-- Loop Pattern Simulator -->
+        <section class="loop-runner-card">
+          <div class="panel-header" style="margin-bottom: 1rem;">
+            <span class="panel-title">Complexity by Visual Loop Pattern Simulator</span>
+            <span class="algo-tag">Live Loop Runner</span>
+          </div>
+          <div class="loop-controls-row">
+            <select id="loop-pattern-select" class="select-speed" style="padding: 0.5rem 1rem;">
+              <option value="single">One Loop: for i=1..n → O(n)</option>
+              <option value="double">Two Nested Loops: n × n → O(n²)</option>
+              <option value="triple">Three Nested Loops: n × n × n → O(n³)</option>
+              <option value="halving">Repeated Halving: n → n/2 → ... → O(log n)</option>
+              <option value="div-conquer">Divide + Linear: log n levels × n work → O(n log n)</option>
+            </select>
+
+            <div class="input-box-wrapper">
+              <label for="loop-n-input">n =</label>
+              <input type="number" id="loop-n-input" class="input-small" value="6" min="1" max="12" />
+            </div>
+
+            <button id="btn-run-loop" class="btn btn-primary btn-sm">▶ Run Loop Simulation</button>
+          </div>
+
+          <div id="loop-logs-output">
+            <div class="text-dim text-sm">Select a pattern and click "Run Loop Simulation" to watch iteration execution and operation counts.</div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Simulation Cycle Stage (Hidden by default) -->
+      <div id="simulation-stage-container" class="simulation-stage-view" style="display: none;">
+        <section class="panel-card">
+          <div class="panel-header">
+            <span class="panel-title">Section 5: General Exam Simulation 8-Step Pattern</span>
+            <span class="algo-tag">Discrete Event Simulation</span>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Follows the general exam pattern: <strong>Initialize → Find event → Advance time → Process → Update → Record → Repeat → Output</strong>.
+          </p>
+
+          <div id="simulation-cards-container" style="margin-top: 1.25rem;"></div>
+        </section>
+      </div>
+
+      <!-- Revision & Quiz Stage (Hidden by default) -->
+      <div id="quiz-stage-container" class="quiz-stage-view" style="display: none;">
+        
+        <!-- Master Comparison Table -->
+        <section class="panel-card">
+          <div class="panel-header">
+            <span class="panel-title">One-Page Sorting Complexity Master Table</span>
+            <span class="algo-tag">Must Memorize</span>
+          </div>
+          <div class="exam-table-container">
+            <table class="exam-table">
+              <thead>
+                <tr>
+                  <th>Algorithm</th>
+                  <th>Best Time</th>
+                  <th>Average Time</th>
+                  <th>Worst Time</th>
+                  <th>Auxiliary Space</th>
+                  <th>Key Exam Takeaway</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Selection Sort</strong></td>
+                  <td>O(n²)</td>
+                  <td>O(n²)</td>
+                  <td>O(n²)</td>
+                  <td>O(1)</td>
+                  <td>Always O(n²) because it must scan the entire remaining unsorted list to find minimum.</td>
+                </tr>
+                <tr>
+                  <td><strong>Bubble Sort</strong></td>
+                  <td><span class="text-emerald">O(n)</span></td>
+                  <td>O(n²)</td>
+                  <td>O(n²)</td>
+                  <td>O(1)</td>
+                  <td>Best case O(n) achieved when swapped flag detects zero inversions on pass 1.</td>
+                </tr>
+                <tr>
+                  <td><strong>Insertion Sort</strong></td>
+                  <td><span class="text-emerald">O(n)</span></td>
+                  <td>O(n²)</td>
+                  <td>O(n²)</td>
+                  <td>O(1)</td>
+                  <td>Best case O(n) when array is already sorted; card player insertion mechanism.</td>
+                </tr>
+                <tr>
+                  <td><strong>Merge Sort</strong></td>
+                  <td><span class="text-cyan">O(n log n)</span></td>
+                  <td><span class="text-cyan">O(n log n)</span></td>
+                  <td><span class="text-cyan">O(n log n)</span></td>
+                  <td><span class="text-coral">O(n)</span></td>
+                  <td>Guaranteed O(n log n) across all cases; requires O(n) auxiliary memory for merging.</td>
+                </tr>
+                <tr>
+                  <td><strong>Quick Sort</strong></td>
+                  <td><span class="text-cyan">O(n log n)</span></td>
+                  <td><span class="text-cyan">O(n log n)</span></td>
+                  <td><span class="text-coral">O(n²)</span></td>
+                  <td>O(log n)*</td>
+                  <td>Worst case O(n²) when pivot repeatedly creates extremely unbalanced partitions.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Interactive Practice Quiz -->
+        <section id="quiz-container"></section>
+
+        <!-- Flashcards Revision Grid -->
+        <section class="panel-card" style="margin-top: 1rem;">
+          <div class="panel-header">
+            <span class="panel-title">Exam Revision Flashcards (Click Card to Flip)</span>
+            <span class="algo-tag">10 Flashcards</span>
+          </div>
+          <div id="flashcards-grid" class="flashcards-grid" style="margin-top: 1rem;"></div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/searching.js"></script>
+  <script src="js/sorting.js"></script>
+  <script src="js/asymptotic.js"></script>
+  <script src="js/greedy.js"></script>
+  <script src="js/simulation.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

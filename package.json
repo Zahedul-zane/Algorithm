@@ -1,0 +1,21 @@
+{
+  "name": "algo-visual-study-hub",
+  "version": "1.0.0",
+  "description": "Interactive Algorithm Design Study & Visual Simulation Hub with Step-by-Step Execution, Asymptotic Analysis, Greedy Algorithms, and Exam Revision",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "algorithms",
+    "visual-simulation",
+    "sorting",
+    "searching",
+    "greedy",
+    "asymptotic-analysis",
+    "exam-notes"
+  ],
+  "author": "AlgoVisualizer",
+  "license": "MIT"
+}

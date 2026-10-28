@@ -130,6 +130,19 @@ const QuizModule = {
       ],
       correctIndex: 0,
       explanation: 'The fundamental 8-step simulation cycle: 1. Initialize → 2. Find event → 3. Advance time → 4. Process event → 5. Update state → 6. Record result → 7. Repeat check → 8. Output final result.'
+    },
+    {
+      id: 11,
+      topic: 'Huffman Coding',
+      question: 'What is the greedy choice rule in Huffman Coding when constructing an optimal prefix tree?',
+      options: [
+        'Always assign the shortest code to the symbol with the lowest frequency',
+        'Repeatedly extract the two trees with the lowest frequencies and merge them',
+        'Sort characters alphabetically and assign sequential binary codes',
+        'Always partition the character set into two subsets of equal frequency'
+      ],
+      correctIndex: 1,
+      explanation: 'Huffman coding greedily extracts the two lowest-frequency nodes from a min-priority queue and merges them into a parent node whose frequency is their sum. Repeating this yields an optimal prefix code tree in O(n log n) time.'
     }
   ],
 
@@ -183,6 +196,11 @@ const QuizModule = {
       title: 'Fractional Knapsack',
       front: 'Fractional Knapsack Greedy Strategy',
       back: '1. Calculate value/weight ratio.\n2. Sort descending by ratio.\n3. Take whole items while they fit.\n4. Take needed fraction of the final item.\nComplexity: O(n log n) due to sorting.'
+    },
+    {
+      title: 'Huffman Coding',
+      front: 'Huffman Coding Greedy Choice & Prefix Property',
+      back: '1. Count frequencies of all characters.\n2. Insert into Min-Priority Queue.\n3. Repeatedly merge two nodes with SMALLEST frequencies into a new parent node (L=0, R=1).\n4. Repeat until single root tree remains.\nPrefix property: No code is a prefix of another!\nComplexity: O(n log n) with Min-Heap.'
     }
   ],
 

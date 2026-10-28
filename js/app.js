@@ -107,6 +107,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       ]
     },
+    huffman: {
+      default: {
+        text: 'A: 45, B: 13, C: 12, D: 16, E: 9, F: 5'
+      },
+      presets: [
+        {
+          label: '✨ Exam Example (CLRS 100-char)',
+          data: { text: 'A: 45, B: 13, C: 12, D: 16, E: 9, F: 5' }
+        },
+        {
+          label: '🔤 Word ("ABRACADABRA")',
+          data: { text: 'ABRACADABRA' }
+        },
+        {
+          label: '⚡ Skewed Tree (Powers of 2)',
+          data: { text: 'A: 16, B: 8, C: 4, D: 2, E: 1, F: 1' }
+        },
+        {
+          label: '⚖️ Balanced Frequencies',
+          data: { text: 'A: 25, B: 25, C: 25, D: 25' }
+        }
+      ]
+    },
     activitySelection: {
       default: {
         activities: [
@@ -308,6 +331,18 @@ document.addEventListener('DOMContentLoaded', () => {
       "      take required fraction; W ← 0",
       "  return total benefit"
     ],
+    huffman: [
+      "HUFFMAN(C)",
+      "  n ← |C|",
+      "  Q ← Min-Priority-Queue(C)",
+      "  for i ← 1 to n - 1",
+      "    allocate new node z",
+      "    z.left  ← x ← EXTRACT-MIN(Q)",
+      "    z.right ← y ← EXTRACT-MIN(Q)",
+      "    z.freq  ← x.freq + y.freq",
+      "    INSERT(Q, z)",
+      "  return EXTRACT-MIN(Q)  // root of tree"
+    ],
     activitySelection: [
       "ACTIVITY-SELECTOR(s, f)",
       "  A ← {first activity}",
@@ -347,7 +382,12 @@ document.addEventListener('DOMContentLoaded', () => {
     bubble: { best: 'O(n)', avg: 'O(n²)', worst: 'O(n²)', space: 'O(1)', note: 'O(n) best case with swapped flag early exit optimization.' },
     insertion: { best: 'O(n)', avg: 'O(n²)', worst: 'O(n²)', space: 'O(1)', note: 'Adaptive; very fast when array is already nearly sorted.' },
     merge: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n log n)', space: 'O(n)', note: 'Divide & Conquer. Stable, guaranteed n log n runtime.' },
-    quick: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n²)', space: 'O(log n)', note: 'Worst case occurs when pivot creates extremely unbalanced partitions.' }
+    quick: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n²)', space: 'O(log n)', note: 'Worst case occurs when pivot creates extremely unbalanced partitions.' },
+    coinChange: { best: 'O(k)', avg: 'O(k)', worst: 'O(k)', space: 'O(1)', note: 'k = coin types. Largest coin heuristic.' },
+    knapsack: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n log n)', space: 'O(n)', note: 'Dominated by sorting items by benefit-to-weight ratio.' },
+    huffman: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n log n)', space: 'O(n)', note: 'Min-Heap Priority Queue: extracts 2 lowest frequencies repeatedly to build optimal prefix tree.' },
+    activitySelection: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n log n)', space: 'O(1)', note: 'Sort by earliest finish time. Optimal subset.' },
+    jobSequencing: { best: 'O(n²)', avg: 'O(n²)', worst: 'O(n²)', space: 'O(n)', note: 'Highest profit first; slot assignment scan.' }
   };
 
   // State Management
@@ -485,6 +525,14 @@ document.addEventListener('DOMContentLoaded', () => {
           <textarea id="in-knap-items" class="custom-textarea" rows="2">${itemsStr}</textarea>
         </div>
       `;
+    } else if (algoKey === 'huffman') {
+      const def = algoConfig.default;
+      formContainer.innerHTML = `
+        <div class="form-group-custom" style="grid-column: span 3;">
+          <label class="custom-label" for="in-huffman">Character Frequencies (Format: "A: 45, B: 13, C: 12..." or type any string like "ABRACADABRA"):</label>
+          <input type="text" id="in-huffman" class="custom-input" value="${def.text}" />
+        </div>
+      `;
     } else if (algoKey === 'activitySelection') {
       const def = algoConfig.default;
       const actsStr = def.activities.map(a => `(${a.s}, ${a.f})`).join(', ');
@@ -538,6 +586,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (itemsInput && data.items) {
         itemsInput.value = data.items.map(i => `${i.name}: val=${i.value}, wt=${i.weight}`).join('\n');
       }
+    } else if (algoKey === 'huffman') {
+      const huffInput = document.getElementById('in-huffman');
+      if (huffInput && data.text) huffInput.value = data.text;
     } else if (algoKey === 'activitySelection') {
       const actInput = document.getElementById('in-activities');
       if (actInput && data.activities) {
@@ -597,6 +648,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const capacity = parseInt(document.getElementById('in-knap-cap')?.value) || 50;
       const items = parseKnapsackItems('in-knap-items', ALGO_PRESETS.knapsack.default.items);
       steps = GreedyModule.generateKnapsackSteps(items, capacity);
+    } else if (algoKey === 'huffman') {
+      const items = parseHuffmanInput('in-huffman', ALGO_PRESETS.huffman.default.text);
+      steps = GreedyModule.generateHuffmanSteps(items);
     } else if (algoKey === 'activitySelection') {
       const activities = parseActivities('in-activities', ALGO_PRESETS.activitySelection.default.activities);
       steps = GreedyModule.generateActivitySelectionSteps(activities);
@@ -695,6 +749,40 @@ document.addEventListener('DOMContentLoaded', () => {
     return events.length > 0 ? events : [...fallback];
   }
 
+  function parseHuffmanInput(inputId, fallback) {
+    const el = document.getElementById(inputId);
+    const raw = el ? el.value.trim() : fallback;
+    if (!raw) return [{ char: 'A', freq: 45 }, { char: 'B', freq: 13 }, { char: 'C', freq: 12 }, { char: 'D', freq: 16 }, { char: 'E', freq: 9 }, { char: 'F', freq: 5 }];
+
+    // If formatted as key-value pairs (e.g., A: 45, B: 13, C: 12...)
+    if (raw.includes(':') || raw.includes('=')) {
+      const tokens = raw.split(/[,;\n]/);
+      const items = [];
+      tokens.forEach(tok => {
+        const parts = tok.split(/[:=]/);
+        if (parts.length >= 2) {
+          const ch = parts[0].trim().toUpperCase();
+          const freq = parseInt(parts[1].trim());
+          if (ch && !isNaN(freq) && freq > 0) {
+            items.push({ char: ch, freq });
+          }
+        }
+      });
+      if (items.length > 0) return items;
+    }
+
+    // Otherwise treat as plain string and count frequencies
+    const freqMap = {};
+    for (const ch of raw) {
+      if (ch.trim()) {
+        const upper = ch.toUpperCase();
+        freqMap[upper] = (freqMap[upper] || 0) + 1;
+      }
+    }
+    const items = Object.entries(freqMap).map(([char, freq]) => ({ char, freq }));
+    return items.length > 0 ? items : [{ char: 'A', freq: 45 }, { char: 'B', freq: 13 }];
+  }
+
   // ================= State Renderer =================
   function renderVisualizerState(state, stepIdx, total) {
     if (!state) return;
@@ -715,6 +803,8 @@ document.addEventListener('DOMContentLoaded', () => {
       renderCoinVisualizer(state);
     } else if (currentAlgo === 'knapsack') {
       renderKnapsackVisualizer(state);
+    } else if (currentAlgo === 'huffman') {
+      renderHuffmanVisualizer(state);
     } else if (currentAlgo === 'activitySelection') {
       renderActivityVisualizer(state);
     } else if (currentAlgo === 'jobSequencing') {
@@ -961,6 +1051,252 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
+  function renderHuffmanVisualizer(state) {
+    const container = document.getElementById('array-visual-container');
+    if (!container) return;
+
+    const queue = state.queue || [];
+    const extracting = state.extracting || [];
+    const newParent = state.newParent;
+    const root = state.root;
+    const codes = state.codes || {};
+    const totalFreq = state.totalFreq || 1;
+
+    // 1. Priority Queue Chips HTML
+    let queueHtml = `
+      <div class="huffman-queue-pane">
+        <div class="huffman-pane-title">
+          <span>Min-Priority Queue Q (${queue.length} ${queue.length === 1 ? 'root tree' : 'trees in forest'}):</span>
+          <span class="huff-hint-badge">Smallest frequencies first</span>
+        </div>
+        <div class="huffman-chips-list">
+    `;
+
+    queue.forEach(node => {
+      const isExtracted = extracting.includes(node.id);
+      const isNew = newParent && newParent.id === node.id;
+      let chipClass = 'huff-chip';
+      let tag = '';
+      if (isExtracted) {
+        chipClass += ' huff-chip-extracting';
+        tag = `<span class="huff-extract-tag">${extracting[0] === node.id ? 'Min 1' : 'Min 2'}</span>`;
+      } else if (isNew) {
+        chipClass += ' huff-chip-new';
+        tag = `<span class="huff-new-tag">Combined</span>`;
+      }
+
+      queueHtml += `
+        <div class="${chipClass}" style="${node.isLeaf ? `border-left: 4px solid ${node.color}` : ''}">
+          ${tag}
+          <div class="huff-chip-header">
+            <strong>${node.isLeaf ? `'${node.char}'` : `(Node)`}</strong>
+            <span class="huff-chip-freq">${node.freq}</span>
+          </div>
+          <div class="huff-chip-sub">${node.isLeaf ? `Freq: ${node.freq}` : `Sum: ${node.freq}`}</div>
+        </div>
+      `;
+    });
+
+    queueHtml += `
+        </div>
+      </div>
+    `;
+
+    // 2. Tree Canvas HTML
+    let treeHtml = '';
+    const treeToRender = root || (queue.length > 0 ? queue[queue.length - 1] : null);
+
+    if (treeToRender) {
+      treeHtml = `
+        <div class="huffman-tree-pane">
+          <div class="huffman-pane-title">
+            <span>Huffman Tree Visualization ${root ? '(Final Prefix-Free Tree)' : '(Active Tree Being Merged)'}:</span>
+            ${root ? '<span class="badge-item-full">Optimal Code Tree</span>' : ''}
+          </div>
+          <div class="huffman-svg-wrapper">
+            ${generateHuffmanSVG(treeToRender)}
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. Codebook Table HTML
+    let codebookHtml = '';
+    const codeEntries = Object.values(codes);
+    if (codeEntries.length > 0) {
+      codebookHtml = `
+        <div class="huffman-codebook-pane">
+          <div class="huffman-pane-title">
+            <span>Prefix-Free Codebook (Branch '0' = Left, '1' = Right):</span>
+            <span class="huff-hint-badge">No code is a prefix of another</span>
+          </div>
+          <div class="huff-table-scroll">
+            <table class="huff-code-table">
+              <thead>
+                <tr>
+                  <th>Character</th>
+                  <th>Frequency</th>
+                  <th>Probability</th>
+                  <th>Huffman Binary Code</th>
+                  <th>Bits</th>
+                  <th>Total Bits (freq × bits)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${codeEntries.map(c => `
+                  <tr>
+                    <td><span class="char-dot" style="background:${c.color}"></span><strong>'${c.char}'</strong></td>
+                    <td class="font-mono">${c.freq}</td>
+                    <td class="font-mono text-dim">${Math.round((c.freq / totalFreq) * 100)}%</td>
+                    <td><span class="huff-code-pill font-mono">${c.code}</span></td>
+                    <td class="font-mono">${c.bits}</td>
+                    <td class="font-mono text-cyan">${c.totalBits}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // 4. Compression Stats Summary
+    let statsHtml = '';
+    if (state.totalVariableBits) {
+      statsHtml = `
+        <div class="huffman-stats-card">
+          <div class="huff-stat-box">
+            <span class="stat-lbl">Fixed-Length Encoding</span>
+            <span class="stat-num">${state.totalFixedBits} bits</span>
+            <span class="stat-sub">${state.fixedBitsPerChar} bits / char</span>
+          </div>
+          <div class="huff-stat-arrow">→</div>
+          <div class="huff-stat-box highlight-emerald">
+            <span class="stat-lbl">Huffman Variable-Length</span>
+            <span class="stat-num text-emerald">${state.totalVariableBits} bits</span>
+            <span class="stat-sub">Average ${state.avgBitsPerChar} bits / char</span>
+          </div>
+          <div class="huff-stat-box highlight-cyan">
+            <span class="stat-lbl">Space Reduction</span>
+            <span class="stat-num text-cyan">-${state.savedPct}%</span>
+            <span class="stat-sub">Saved ${state.savedBits} bits (${state.totalFixedBits} → ${state.totalVariableBits})</span>
+          </div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = `
+      <div class="huffman-visual">
+        ${queueHtml}
+        ${treeHtml}
+        ${codebookHtml}
+        ${statsHtml}
+      </div>
+    `;
+  }
+
+  function generateHuffmanSVG(root) {
+    if (!root) return '';
+
+    let leafCount = 0;
+    function countLeaves(node, depth = 0) {
+      if (!node) return 0;
+      if (node.isLeaf) {
+        leafCount++;
+        return depth;
+      }
+      return Math.max(countLeaves(node.left, depth + 1), countLeaves(node.right, depth + 1));
+    }
+    const maxDepth = countLeaves(root);
+    const leafSpread = Math.max(leafCount * 70, 360);
+    const svgWidth = Math.max(leafSpread + 80, 520);
+    const svgHeight = Math.max((maxDepth + 1) * 75 + 50, 240);
+
+    let currentLeafX = 50;
+    const leafSpacing = (svgWidth - 100) / Math.max(leafCount - 1, 1);
+
+    function assignPositions(node, depth = 0) {
+      if (!node) return;
+      node.y = 45 + depth * 70;
+      if (node.isLeaf) {
+        node.x = currentLeafX;
+        currentLeafX += leafSpacing;
+        return;
+      }
+      if (node.left) assignPositions(node.left, depth + 1);
+      if (node.right) assignPositions(node.right, depth + 1);
+      if (node.left && node.right) {
+        node.x = (node.left.x + node.right.x) / 2;
+      } else if (node.left) {
+        node.x = node.left.x + 35;
+      } else if (node.right) {
+        node.x = node.right.x - 35;
+      } else {
+        node.x = svgWidth / 2;
+      }
+    }
+
+    currentLeafX = 50;
+    assignPositions(root, 0);
+
+    let linesSvg = '';
+    let nodesSvg = '';
+
+    function renderNodeSVG(node) {
+      if (!node) return;
+
+      if (node.left) {
+        const midX = (node.x + node.left.x) / 2;
+        const midY = (node.y + node.left.y) / 2;
+        linesSvg += `
+          <line x1="${node.x}" y1="${node.y}" x2="${node.left.x}" y2="${node.left.y}" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+          <circle cx="${midX}" cy="${midY}" r="10" fill="#0f172a" stroke="#06b6d4" stroke-width="1.5" />
+          <text x="${midX}" y="${midY + 4}" font-family="var(--font-mono)" font-size="11" font-weight="bold" fill="#67e8f9" text-anchor="middle">0</text>
+        `;
+        renderNodeSVG(node.left);
+      }
+
+      if (node.right) {
+        const midX = (node.x + node.right.x) / 2;
+        const midY = (node.y + node.right.y) / 2;
+        linesSvg += `
+          <line x1="${node.x}" y1="${node.y}" x2="${node.right.x}" y2="${node.right.y}" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+          <circle cx="${midX}" cy="${midY}" r="10" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
+          <text x="${midX}" y="${midY + 4}" font-family="var(--font-mono)" font-size="11" font-weight="bold" fill="#fde68a" text-anchor="middle">1</text>
+        `;
+        renderNodeSVG(node.right);
+      }
+
+      if (node.isLeaf) {
+        const nodeColor = node.color || '#6366f1';
+        nodesSvg += `
+          <g class="huff-svg-node" transform="translate(${node.x}, ${node.y})">
+            <circle r="22" fill="${nodeColor}" stroke="#ffffff" stroke-width="2" filter="drop-shadow(0 0 10px ${nodeColor}88)" />
+            <text y="-2" font-family="var(--font-heading)" font-size="14" font-weight="800" fill="#ffffff" text-anchor="middle">${node.char}</text>
+            <text y="14" font-family="var(--font-mono)" font-size="11" font-weight="bold" fill="#f8fafc" text-anchor="middle">${node.freq}</text>
+            ${node.code ? `<text y="36" font-family="var(--font-mono)" font-size="11" font-weight="bold" fill="#a5b4fc" text-anchor="middle">[${node.code}]</text>` : ''}
+          </g>
+        `;
+      } else {
+        nodesSvg += `
+          <g class="huff-svg-node" transform="translate(${node.x}, ${node.y})">
+            <circle r="19" fill="#1e293b" stroke="#6366f1" stroke-width="2" />
+            <text y="5" font-family="var(--font-mono)" font-size="12" font-weight="bold" fill="#c7d2fe" text-anchor="middle">${node.freq}</text>
+          </g>
+        `;
+      }
+    }
+
+    renderNodeSVG(root);
+
+    return `
+      <svg viewBox="0 0 ${svgWidth} ${svgHeight}" class="huffman-svg" style="width: 100%; height: auto; max-height: 480px; display: block; margin: 0 auto;">
+        ${linesSvg}
+        ${nodesSvg}
+      </svg>
+    `;
+  }
+
   function renderActivityVisualizer(state) {
     const container = document.getElementById('array-visual-container');
     if (!container) return;
@@ -1147,8 +1483,9 @@ document.addEventListener('DOMContentLoaded', () => {
       quick: { title: '2.E Quick Sort', subtitle: 'Choose pivot, partition into smaller/larger elements, then recursively sort each half.' },
       coinChange: { title: '4.A Greedy Coin Change', subtitle: 'Choose largest coin first. Note: May fail for arbitrary coin systems (see trap preset).' },
       knapsack: { title: '4.B Fractional Knapsack', subtitle: 'Calculate benefit/weight ratio. Take highest ratio items first. Fractions allowed.' },
-      activitySelection: { title: '4.C Activity Selection', subtitle: 'Earliest finish time first greedy choice rule. Maximizes non-overlapping activities.' },
-      jobSequencing: { title: '4.D Job Sequencing with Deadlines', subtitle: 'Sort by profit descending. Place in latest available slot ≤ deadline.' },
+      huffman: { title: '4.C Huffman Coding (Prefix Tree)', subtitle: 'Greedy Lossless Compression: Build optimal variable-length prefix-free binary tree from symbol frequencies.' },
+      activitySelection: { title: '4.D Activity Selection', subtitle: 'Earliest finish time first greedy choice rule. Maximizes non-overlapping activities.' },
+      jobSequencing: { title: '4.E Job Sequencing with Deadlines', subtitle: 'Sort by profit descending. Place in latest available slot ≤ deadline.' },
       simulation: { title: '5. Simulation — General Exam Visual', subtitle: 'The 8-step simulation cycle pattern: Initialize, Find event, Advance time, Process, Update, Record, Repeat, Output.' },
       asymptotic: { title: '3. Asymptotic Analysis & Growth Rates', subtitle: 'Big-O (Upper), Big-Omega (Lower), Big-Theta (Tight). Growth comparison curves & loop patterns.' },
       revision: { title: '6. One-Page Exam Revision & Practice Quiz', subtitle: 'Quick comparison cheat sheet, sorting complexity master table, flashcards, and exam quiz.' }
@@ -1213,6 +1550,13 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (currentAlgo === 'coinChange') {
       const amtInput = document.getElementById('in-coin-amount');
       if (amtInput) amtInput.value = Math.floor(Math.random() * 500) + 50;
+    } else if (currentAlgo === 'huffman') {
+      const sampleChars = ['A', 'B', 'C', 'D', 'E', 'F'];
+      const randomText = sampleChars
+        .map(ch => `${ch}: ${Math.floor(Math.random() * 40) + 5}`)
+        .join(', ');
+      const huffInput = document.getElementById('in-huffman');
+      if (huffInput) huffInput.value = randomText;
     }
     runAlgorithmWithInputs(currentAlgo);
   });
@@ -1256,13 +1600,83 @@ document.addEventListener('DOMContentLoaded', () => {
       : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
   });
 
-  // Algorithm navigation links
+  // ================= Sidebar Toggle Controller (3-Line Button) =================
+  const btnSidebarToggle = document.getElementById('btn-sidebar-toggle');
+  const btnSidebarClose = document.getElementById('btn-sidebar-close');
+  const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+  const isMobileView = () => window.innerWidth <= 1100;
+
+  function updateSidebarUI() {
+    if (isMobileView()) {
+      const isOpen = document.body.classList.contains('sidebar-open');
+      btnSidebarToggle?.classList.toggle('is-active', isOpen);
+      btnSidebarToggle?.classList.remove('is-collapsed');
+      btnSidebarToggle?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      btnSidebarToggle?.setAttribute('title', isOpen ? 'Close Syllabus (Esc)' : 'Open Syllabus');
+    } else {
+      const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+      btnSidebarToggle?.classList.remove('is-active');
+      btnSidebarToggle?.classList.toggle('is-collapsed', isCollapsed);
+      btnSidebarToggle?.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+      btnSidebarToggle?.setAttribute('title', isCollapsed ? 'Expand Syllabus (Ctrl+B)' : 'Collapse Syllabus (Ctrl+B)');
+    }
+  }
+
+  function toggleSidebar() {
+    if (isMobileView()) {
+      document.body.classList.toggle('sidebar-open');
+    } else {
+      document.body.classList.toggle('sidebar-collapsed');
+    }
+    updateSidebarUI();
+    if (window.soundEngine && typeof window.soundEngine.click === 'function') {
+      window.soundEngine.click();
+    }
+  }
+
+  function closeMobileSidebar() {
+    if (document.body.classList.contains('sidebar-open')) {
+      document.body.classList.remove('sidebar-open');
+      updateSidebarUI();
+    }
+  }
+
+  btnSidebarToggle?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleSidebar();
+  });
+
+  btnSidebarClose?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeMobileSidebar();
+  });
+
+  sidebarOverlay?.addEventListener('click', () => {
+    closeMobileSidebar();
+  });
+
+  // Algorithm navigation links: switch algo and auto-close sidebar on mobile
   document.querySelectorAll('.algo-nav-item').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const algo = e.currentTarget.dataset.algo;
       if (algo) loadAlgorithm(algo);
+      if (isMobileView()) {
+        closeMobileSidebar();
+      }
     });
   });
+
+  // Window resize handler to maintain clean states
+  window.addEventListener('resize', () => {
+    if (!isMobileView()) {
+      document.body.classList.remove('sidebar-open');
+    }
+    updateSidebarUI();
+  });
+
+  // Set initial attributes
+  updateSidebarUI();
 
   // Asymptotic controls
   document.getElementById('asymptotic-n-slider')?.addEventListener('input', (e) => {
@@ -1290,6 +1704,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Keyboard navigation shortcuts
   window.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'Escape' && isMobileView() && document.body.classList.contains('sidebar-open')) {
+      closeMobileSidebar();
+      return;
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+      e.preventDefault();
+      toggleSidebar();
+      return;
+    }
     if (e.code === 'Space') {
       e.preventDefault();
       visualizer.togglePlay();

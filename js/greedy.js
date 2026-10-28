@@ -454,6 +454,273 @@ const GreedyModule = {
     });
 
     return steps;
+  },
+
+  cloneNode(node) {
+    if (!node) return null;
+    return {
+      id: node.id,
+      char: node.char,
+      freq: node.freq,
+      isLeaf: node.isLeaf,
+      code: node.code || '',
+      color: node.color,
+      left: this.cloneNode(node.left),
+      right: this.cloneNode(node.right)
+    };
+  },
+
+  // Huffman Coding Prefix Tree Generation
+  generateHuffmanSteps(charItems) {
+    const steps = [];
+    const colors = [
+      '#6366f1', '#06b6d4', '#10b981', '#f59e0b', 
+      '#ec4899', '#8b5cf6', '#3b82f6', '#f43f5e', 
+      '#14b8a6', '#eab308'
+    ];
+
+    // Filter valid characters and ensure positive frequencies
+    const validItems = charItems
+      .filter(item => item && item.char && item.freq > 0)
+      .map((item, idx) => ({
+        id: `leaf_${item.char}_${idx}`,
+        char: item.char,
+        freq: Number(item.freq),
+        isLeaf: true,
+        left: null,
+        right: null,
+        code: '',
+        color: colors[idx % colors.length]
+      }));
+
+    if (validItems.length === 0) {
+      return [{
+        stepTitle: 'Huffman Coding: Error',
+        explanation: 'Please provide at least one character with positive frequency.',
+        queue: [],
+        metrics: { resultValue: 'No inputs' }
+      }];
+    }
+
+    // Edge case: single character
+    if (validItems.length === 1) {
+      const single = validItems[0];
+      single.code = '0';
+      const codes = { [single.char]: { code: '0', freq: single.freq, bits: 1, totalBits: single.freq } };
+      return [{
+        queue: [this.cloneNode(single)],
+        extracting: [],
+        newParent: null,
+        root: this.cloneNode(single),
+        codes,
+        fixedBitsPerChar: 1,
+        totalFixedBits: single.freq,
+        totalVariableBits: single.freq,
+        savedBits: 0,
+        savedPct: 0,
+        avgBitsPerChar: '1.00',
+        activeLine: 9,
+        stepTitle: 'Single Character Huffman Tree',
+        explanation: `Only one character '${single.char}' present. Assigned 1-bit code '0'.`,
+        historyRow: { step: 'Complete', detail: `${single.char}: 0` },
+        metrics: {
+          comparisons: 1,
+          swaps: 0,
+          status: 'Single Character Code',
+          resultValue: `${single.char}: '0'`,
+          complexityCase: 'O(1) trivial tree'
+        },
+        sound: 'found'
+      }];
+    }
+
+    // Min-Priority Queue (sorted by frequency ascending)
+    let queue = validItems.map(item => this.cloneNode(item));
+    queue.sort((a, b) => a.freq - b.freq);
+
+    const totalFreq = validItems.reduce((acc, it) => acc + it.freq, 0);
+    const n = validItems.length;
+    let comparisonsCount = n;
+    let mergesCount = 0;
+
+    // Helper to format node label
+    const nodeLabel = (node) => node.isLeaf ? `'${node.char}'` : `(Node:${node.freq})`;
+
+    // Step 0: Initial Priority Queue
+    steps.push({
+      queue: queue.map(node => this.cloneNode(node)),
+      extracting: [],
+      newParent: null,
+      root: null,
+      codes: {},
+      totalFreq,
+      stepTitle: 'Step 0: Initialize Min-Priority Queue Q',
+      explanation: `Created leaf nodes for all ${n} symbols with initial frequencies: ${queue.map(n => `${nodeLabel(n)}:${n.freq}`).join(', ')}. Greedy Rule: Repeatedly extract the TWO smallest frequencies and merge them.`,
+      activeLine: 3,
+      historyRow: { 
+        step: 'Init Q', 
+        detail: queue.map(n => `${nodeLabel(n)}:${n.freq}`).join(', ') 
+      },
+      metrics: {
+        comparisons: comparisonsCount,
+        swaps: 0,
+        status: `Q populated with ${n} nodes`,
+        resultValue: `Min element: ${nodeLabel(queue[0])} (${queue[0].freq})`,
+        complexityCase: 'O(n log n) Min-Priority Queue (Min-Heap)'
+      },
+      sound: 'compare'
+    });
+
+    let iteration = 1;
+    while (queue.length > 1) {
+      // Always keep queue sorted by frequency ascending
+      queue.sort((a, b) => a.freq - b.freq);
+
+      // Step A: Extract two nodes with lowest frequencies
+      const min1 = queue[0];
+      const min2 = queue[1];
+      comparisonsCount += 2;
+
+      steps.push({
+        queue: queue.map(node => this.cloneNode(node)),
+        extracting: [min1.id, min2.id],
+        newParent: null,
+        root: null,
+        codes: {},
+        totalFreq,
+        stepTitle: `Iteration ${iteration}: Extract Two Minimum Frequencies`,
+        explanation: `Greedy choice: Extracted lowest node ${nodeLabel(min1)} (freq: ${min1.freq}) and next lowest ${nodeLabel(min2)} (freq: ${min2.freq}) from front of priority queue.`,
+        activeLine: 5,
+        historyRow: { 
+          step: `Extract ${iteration}`, 
+          detail: `min1=${nodeLabel(min1)} (${min1.freq}), min2=${nodeLabel(min2)} (${min2.freq})` 
+        },
+        metrics: {
+          comparisons: comparisonsCount,
+          swaps: mergesCount,
+          status: `Extracted ${nodeLabel(min1)} & ${nodeLabel(min2)}`,
+          resultValue: `Sum: ${min1.freq} + ${min2.freq} = ${min1.freq + min2.freq}`,
+          complexityCase: `Iteration ${iteration}/${n - 1}`
+        },
+        sound: 'compare'
+      });
+
+      // Remove the two smallest elements
+      queue.splice(0, 2);
+
+      // Step B: Create internal parent node
+      const parentFreq = min1.freq + min2.freq;
+      const parent = {
+        id: `internal_${iteration}_${parentFreq}`,
+        char: null,
+        freq: parentFreq,
+        isLeaf: false,
+        code: '',
+        color: '#64748b',
+        left: this.cloneNode(min1),
+        right: this.cloneNode(min2)
+      };
+
+      mergesCount++;
+      queue.push(parent);
+      queue.sort((a, b) => a.freq - b.freq);
+
+      steps.push({
+        queue: queue.map(node => this.cloneNode(node)),
+        extracting: [],
+        newParent: this.cloneNode(parent),
+        root: queue.length === 1 ? this.cloneNode(parent) : null,
+        codes: {},
+        totalFreq,
+        stepTitle: `Iteration ${iteration}: Merge Nodes (${min1.freq} + ${min2.freq} = ${parentFreq})`,
+        explanation: `Constructed parent node with combined frequency ${parentFreq}. Assigned Left branch = '0' (${nodeLabel(min1)}) and Right branch = '1' (${nodeLabel(min2)}). Re-inserted into Min-Priority Queue.`,
+        activeLine: 7,
+        historyRow: { 
+          step: `Merge ${iteration}`, 
+          detail: `${min1.freq} + ${min2.freq} → (Node: ${parentFreq})` 
+        },
+        metrics: {
+          comparisons: comparisonsCount,
+          swaps: mergesCount,
+          status: `Parent created (Freq: ${parentFreq})`,
+          resultValue: `Queue remaining: ${queue.length} trees`,
+          complexityCase: `Re-inserted into Min-Heap (Queue size: ${queue.length})`
+        },
+        sound: 'swap'
+      });
+
+      iteration++;
+    }
+
+    // Full Huffman Tree Root
+    const root = queue[0];
+
+    // Traverse root to generate binary prefix-free codes for all leaves
+    const codes = {};
+    const traverse = (node, pathCode) => {
+      if (!node) return;
+      node.code = pathCode;
+      if (node.isLeaf && node.char) {
+        const bitLen = pathCode.length;
+        codes[node.char] = {
+          char: node.char,
+          code: pathCode,
+          freq: node.freq,
+          bits: bitLen,
+          totalBits: node.freq * bitLen,
+          color: node.color
+        };
+        return;
+      }
+      if (node.left) traverse(node.left, pathCode + '0');
+      if (node.right) traverse(node.right, pathCode + '1');
+    };
+
+    traverse(root, '');
+
+    // Compute Compression Statistics
+    const fixedBitsPerChar = Math.max(1, Math.ceil(Math.log2(n)));
+    const totalFixedBits = totalFreq * fixedBitsPerChar;
+    const totalVariableBits = Object.values(codes).reduce((sum, item) => sum + item.totalBits, 0);
+    const savedBits = Math.max(0, totalFixedBits - totalVariableBits);
+    const savedPct = totalFixedBits > 0 ? Math.round((savedBits / totalFixedBits) * 100) : 0;
+    const avgBitsPerChar = totalFreq > 0 ? (totalVariableBits / totalFreq).toFixed(2) : '0.00';
+
+    const codesSummary = Object.entries(codes)
+      .map(([ch, data]) => `'${ch}': ${data.code}`)
+      .join(' | ');
+
+    steps.push({
+      queue: [this.cloneNode(root)],
+      extracting: [],
+      newParent: null,
+      root: this.cloneNode(root),
+      codes,
+      fixedBitsPerChar,
+      totalFixedBits,
+      totalVariableBits,
+      savedBits,
+      savedPct,
+      avgBitsPerChar,
+      totalFreq,
+      stepTitle: 'Huffman Coding: Optimal Prefix Tree Complete!',
+      explanation: `Tree traversal finished! Variable-length prefix codes generated. High-frequency characters get shorter codes (e.g. 1 bit), while rare characters get longer codes. Saved ${savedPct}% space (${totalVariableBits} bits vs ${totalFixedBits} bits).`,
+      activeLine: 9,
+      historyRow: { 
+        step: 'Final Codes', 
+        detail: codesSummary 
+      },
+      metrics: {
+        comparisons: comparisonsCount,
+        swaps: mergesCount,
+        status: `Compression Achieved: ${savedPct}% Saved`,
+        resultValue: `Avg: ${avgBitsPerChar} bits/char (${totalVariableBits} bits total)`,
+        complexityCase: `O(n log n) Guaranteed Optimal Prefix Code`
+      },
+      sound: 'found'
+    });
+
+    return steps;
   }
 };
 

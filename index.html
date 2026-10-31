@@ -16,17 +16,19 @@
 </head>
 <body>
 
+  <!-- Floating Hamburger Toggle Button -->
+  <button id="btn-sidebar-toggle" class="sidebar-toggle-btn floating-hamburger" aria-label="Extend Right Sidebar" title="Extend Right Sidebar (Ctrl+E)" aria-expanded="false">
+    <span class="hamburger-box">
+      <span class="hamburger-line line-1"></span>
+      <span class="hamburger-line line-2"></span>
+      <span class="hamburger-line line-3"></span>
+    </span>
+  </button>
+
   <!-- Top Navigation Header -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand-section">
-        <button id="btn-sidebar-toggle" class="sidebar-toggle-btn" aria-label="Toggle Syllabus Sidebar" title="Toggle Sidebar (Open/Close)" aria-expanded="true">
-          <span class="hamburger-box">
-            <span class="hamburger-line line-1"></span>
-            <span class="hamburger-line line-2"></span>
-            <span class="hamburger-line line-3"></span>
-          </span>
-        </button>
         <div class="brand-logo-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="4 17 10 11 4 5"></polyline>
@@ -223,7 +225,7 @@
 
       <!-- Standard Algorithm Visualizer Stage -->
       <div id="algo-stage-container">
-        
+
         <!-- Controls Bar -->
         <section class="controls-card">
           <div class="control-buttons-row">
@@ -257,114 +259,134 @@
 
           <!-- Dynamic Input Panel & Quick Presets -->
           <div class="io-panel-container">
-            <div class="io-header">
-              <div class="io-title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                Input Parameters &amp; Presets
-              </div>
+            <div class="io-presets-row">
+              <span class="io-presets-label">Presets:</span>
               <div id="quick-presets-container" class="quick-presets-list">
                 <!-- Dynamically populated per algorithm -->
               </div>
             </div>
 
-            <!-- Custom Form Inputs for All Algorithms -->
-            <div id="dynamic-input-form" class="dynamic-input-form-grid">
-              <!-- Dynamically rendered by app.js -->
-            </div>
+            <div class="io-controls-row">
+              <!-- Custom Form Inputs for All Algorithms -->
+              <div id="dynamic-input-form" class="dynamic-input-form-grid">
+                <!-- Dynamically rendered by app.js -->
+              </div>
 
-            <div class="input-actions-bar">
-              <button id="btn-apply-input" class="btn btn-accent btn-sm">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                Apply &amp; Run Input
-              </button>
-              <button id="btn-random-input" class="btn btn-secondary btn-sm">🎲 Randomize</button>
-              <button id="btn-reset-exam-input" class="btn btn-secondary btn-sm">✨ Reset to Exam Example</button>
-            </div>
-          </div>
-        </section>
-
-        <!-- Live Output & Performance Console -->
-        <section class="output-console-card">
-          <div class="output-console-header">
-            <div class="output-console-title">
-              <span class="status-indicator-dot"></span>
-              Live Output &amp; Performance Console
-            </div>
-            <button id="btn-copy-output" class="btn-copy-small" title="Copy Output to Clipboard">
-              📋 Copy Output Summary
-            </button>
-          </div>
-
-          <div class="output-console-grid">
-            <div class="output-metric-box primary-result">
-              <span class="metric-label">Algorithm Result / Return Value</span>
-              <div id="out-result-value" class="metric-big-val">Initializing...</div>
-            </div>
-
-            <div class="output-metric-box">
-              <span class="metric-label">Total Comparisons</span>
-              <div id="out-comparisons-count" class="metric-val text-cyan">0</div>
-            </div>
-
-            <div class="output-metric-box">
-              <span class="metric-label">Swaps / Operations</span>
-              <div id="out-swaps-count" class="metric-val text-amber">0</div>
-            </div>
-
-            <div class="output-metric-box case-box">
-              <span class="metric-label">Triggered Case &amp; Analysis</span>
-              <div id="out-complexity-case" class="metric-val-case">Evaluating...</div>
+              <div class="input-actions-bar">
+                <button id="btn-apply-input" class="btn btn-accent btn-sm" title="Apply inputs and run simulation">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  Run
+                </button>
+                <button id="btn-random-input" class="btn btn-secondary btn-sm" title="Generate random inputs">🎲 Random</button>
+              </div>
             </div>
           </div>
         </section>
 
-        <!-- Visualizer Area -->
-        <section class="visualizer-card" style="margin-top: 1.5rem;">
-          <div class="step-status-bar">
-            <div id="state-step-title" class="step-status-title">Step 0: Initialization</div>
-            <div id="state-step-desc" class="step-status-desc">Target key = 6. Searching through array of 7 elements.</div>
+        <!-- Two-column stage: Visualizer Left + Details Right -->
+        <div class="stage-two-col">
+
+          <!-- LEFT: Visualizer Area -->
+          <div class="stage-left-col">
+
+            <!-- Visualizer Canvas -->
+            <section class="visualizer-card">
+              <div class="step-status-bar">
+                <div id="state-step-title" class="step-status-title">Step 0: Initialization</div>
+                <div id="state-step-desc" class="step-status-desc">Target key = 6. Searching through array of 7 elements.</div>
+              </div>
+
+              <!-- Dynamic Visualizer Canvas / Array Bar Stage -->
+              <div id="array-visual-container"></div>
+            </section>
+
+            <!-- Live Output Console (below visualizer on left) -->
+            <section class="output-console-card">
+              <div class="output-console-header">
+                <div class="output-console-title">
+                  <span class="status-indicator-dot"></span>
+                  Live Output
+                </div>
+                <button id="btn-copy-output" class="btn-copy-small" title="Copy Output to Clipboard">
+                  📋 Copy
+                </button>
+              </div>
+
+              <div class="output-console-grid">
+                <div class="output-metric-box primary-result">
+                  <span class="metric-label">Result</span>
+                  <div id="out-result-value" class="metric-big-val">Initializing...</div>
+                </div>
+
+                <div class="output-metric-box">
+                  <span class="metric-label">Comparisons</span>
+                  <div id="out-comparisons-count" class="metric-val text-cyan">0</div>
+                </div>
+
+                <div class="output-metric-box">
+                  <span class="metric-label">Swaps/Ops</span>
+                  <div id="out-swaps-count" class="metric-val text-amber">0</div>
+                </div>
+
+                <div class="output-metric-box case-box">
+                  <span class="metric-label">Case Analysis</span>
+                  <div id="out-complexity-case" class="metric-val-case">Evaluating...</div>
+                </div>
+              </div>
+            </section>
           </div>
 
-          <!-- Dynamic Visualizer Canvas / Array Bar Stage -->
-          <div id="array-visual-container"></div>
-        </section>
+          <!-- RIGHT: Step Details Sidebar Panel -->
+          <aside class="stage-right-panel" id="stage-right-panel">
+            <!-- Panel Header with Extend/Shrink Action -->
+            <div class="right-panel-header-bar">
+              <div class="right-panel-header-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                <span>Step Trace</span>
+              </div>
+              <div class="right-panel-header-actions">
+                <button id="btn-right-panel-extend" class="btn-panel-action" title="Extend / Shrink Right Panel (Ctrl+E)">
+                  <span class="extend-icon">⤢</span>
+                  <span class="extend-text">Extend</span>
+                </button>
+                <button id="btn-right-panel-close" class="btn-panel-action close-action" title="Close Panel">✕</button>
+              </div>
+            </div>
 
-        <!-- Lower Details: Pseudocode and Live Exam Table -->
-        <div class="details-split-grid" style="margin-top: 1.5rem;">
-          <!-- Pseudocode Line Tracker -->
-          <section class="panel-card">
-            <div class="panel-header">
-              <span class="panel-title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                Pseudocode Execution Tracker
-              </span>
-              <span class="algo-tag">Active Line Glowing</span>
+            <!-- Explain This Step -->
+            <div class="right-panel-section">
+              <div class="right-panel-label">EXPLAIN THIS STEP</div>
+              <div id="state-step-desc-panel" class="step-explain-box">
+                Nothing has run yet. Press Play or click a step to begin.
+              </div>
             </div>
-            <div id="pseudocode-content" class="pseudocode-box"></div>
-          </section>
 
-          <!-- Exam Step-by-Step Table -->
-          <section class="panel-card">
-            <div class="panel-header">
-              <span class="panel-title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-                Exam Step-by-Step Table
-              </span>
-              <span class="algo-tag">Matches PDF Notes</span>
+            <!-- Pseudocode Execution Tracker -->
+            <div class="right-panel-section">
+              <div class="right-panel-label">PSEUDOCODE</div>
+              <div id="pseudocode-content" class="pseudocode-box"></div>
             </div>
-            <div class="exam-table-container">
-              <table class="exam-table">
-                <thead>
-                  <tr>
-                    <th style="width: 120px;">Step / Pass</th>
-                    <th>Array State &amp; Decision</th>
-                  </tr>
-                </thead>
-                <tbody id="exam-table-body"></tbody>
-              </table>
+
+            <!-- Exam Step-by-Step Table -->
+            <div class="right-panel-section right-panel-table-section">
+              <div class="right-panel-label">STEP TABLE</div>
+              <div class="exam-table-container">
+                <table class="exam-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 80px;">Step</th>
+                      <th>State & Decision</th>
+                    </tr>
+                  </thead>
+                  <tbody id="exam-table-body"></tbody>
+                </table>
+              </div>
             </div>
-          </section>
+          </aside>
         </div>
+
+        <!-- Backdrop overlay for mobile drawer -->
+        <div id="right-sidebar-overlay" class="right-sidebar-overlay" aria-hidden="true"></div>
 
       </div>
 

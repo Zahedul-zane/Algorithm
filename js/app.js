@@ -483,84 +483,94 @@ document.addEventListener('DOMContentLoaded', () => {
     if (algoKey === 'linear' || algoKey === 'binary') {
       const def = algoConfig.default;
       formContainer.innerHTML = `
-        <div class="form-group-custom" style="grid-column: span 2;">
-          <label class="custom-label" for="in-array">Array Elements (comma-separated):</label>
-          <input type="text" id="in-array" class="custom-input" value="${def.array.join(', ')}" />
+        <div class="form-group-custom flex-grow">
+          <label class="custom-label" for="in-array">Array:</label>
+          <input type="text" id="in-array" class="custom-input" placeholder="e.g. 8, 4, 6, 9, 2" value="${def.array.join(', ')}" />
         </div>
-        <div class="form-group-custom">
-          <label class="custom-label" for="in-key">Target Search Key:</label>
-          <input type="number" id="in-key" class="custom-input" value="${def.key}" />
+        <div class="form-group-custom flex-fixed-sm">
+          <label class="custom-label" for="in-key">Target:</label>
+          <input type="number" id="in-key" class="custom-input" placeholder="Key" value="${def.key}" />
         </div>
       `;
     } else if (['selection', 'bubble', 'insertion', 'merge', 'quick'].includes(algoKey)) {
       const def = algoConfig.default;
       formContainer.innerHTML = `
-        <div class="form-group-custom" style="grid-column: span 3;">
-          <label class="custom-label" for="in-array">Input Array to Sort (comma-separated numbers):</label>
-          <input type="text" id="in-array" class="custom-input" value="${def.array.join(', ')}" />
+        <div class="form-group-custom flex-grow">
+          <label class="custom-label" for="in-array">Array to Sort:</label>
+          <input type="text" id="in-array" class="custom-input" placeholder="e.g. 8, 4, 6, 9, 2, 3, 1" value="${def.array.join(', ')}" />
         </div>
       `;
     } else if (algoKey === 'coinChange') {
       const def = algoConfig.default;
       formContainer.innerHTML = `
-        <div class="form-group-custom">
-          <label class="custom-label" for="in-coin-amount">Target Amount (cents):</label>
-          <input type="number" id="in-coin-amount" class="custom-input" value="${def.amount}" />
+        <div class="form-group-custom flex-fixed-sm">
+          <label class="custom-label" for="in-coin-amount">Amount:</label>
+          <input type="number" id="in-coin-amount" class="custom-input" placeholder="564" value="${def.amount}" />
         </div>
-        <div class="form-group-custom" style="grid-column: span 2;">
-          <label class="custom-label" for="in-coin-system">Available Coins (comma-separated):</label>
-          <input type="text" id="in-coin-system" class="custom-input" value="${def.coins.join(', ')}" />
+        <div class="form-group-custom flex-grow">
+          <label class="custom-label" for="in-coin-system">Coins:</label>
+          <input type="text" id="in-coin-system" class="custom-input" placeholder="200, 100, 25, 10, 1" value="${def.coins.join(', ')}" />
         </div>
       `;
     } else if (algoKey === 'knapsack') {
       const def = algoConfig.default;
       const itemsStr = def.items.map(i => `${i.name}: val=${i.value}, wt=${i.weight}`).join('\n');
       formContainer.innerHTML = `
-        <div class="form-group-custom">
-          <label class="custom-label" for="in-knap-cap">Knapsack Capacity W (kg):</label>
-          <input type="number" id="in-knap-cap" class="custom-input" value="${def.capacity}" />
+        <div class="form-group-custom flex-fixed-sm">
+          <label class="custom-label" for="in-knap-cap">Capacity:</label>
+          <input type="number" id="in-knap-cap" class="custom-input" placeholder="50" value="${def.capacity}" />
         </div>
-        <div class="form-group-custom" style="grid-column: span 2;">
-          <label class="custom-label" for="in-knap-items">Items (One per line: Name: val=X, wt=Y):</label>
-          <textarea id="in-knap-items" class="custom-textarea" rows="2">${itemsStr}</textarea>
+        <div class="form-group-custom flex-grow">
+          <label class="custom-label" for="in-knap-items">Items (val=X, wt=Y):</label>
+          <textarea id="in-knap-items" class="custom-textarea" rows="1" placeholder="Item 1: val=60, wt=10">${itemsStr}</textarea>
         </div>
       `;
     } else if (algoKey === 'huffman') {
       const def = algoConfig.default;
       formContainer.innerHTML = `
-        <div class="form-group-custom" style="grid-column: span 3;">
-          <label class="custom-label" for="in-huffman">Character Frequencies (Format: "A: 45, B: 13, C: 12..." or type any string like "ABRACADABRA"):</label>
-          <input type="text" id="in-huffman" class="custom-input" value="${def.text}" />
+        <div class="form-group-custom flex-grow">
+          <label class="custom-label" for="in-huffman">Frequencies / Text:</label>
+          <input type="text" id="in-huffman" class="custom-input" placeholder="A: 45, B: 13, C: 12..." value="${def.text}" />
         </div>
       `;
     } else if (algoKey === 'activitySelection') {
       const def = algoConfig.default;
       const actsStr = def.activities.map(a => `(${a.s}, ${a.f})`).join(', ');
       formContainer.innerHTML = `
-        <div class="form-group-custom" style="grid-column: span 3;">
-          <label class="custom-label" for="in-activities">Activities list as (start, finish) intervals:</label>
-          <input type="text" id="in-activities" class="custom-input" value="${actsStr}" />
+        <div class="form-group-custom flex-grow">
+          <label class="custom-label" for="in-activities">Activities (start, finish):</label>
+          <input type="text" id="in-activities" class="custom-input" placeholder="(1, 4), (3, 5)..." value="${actsStr}" />
         </div>
       `;
     } else if (algoKey === 'jobSequencing') {
       const def = algoConfig.default;
       const jobsStr = def.jobs.map(j => `${j.name}: P=${j.profit}, D=${j.deadline}`).join(', ');
       formContainer.innerHTML = `
-        <div class="form-group-custom" style="grid-column: span 3;">
-          <label class="custom-label" for="in-jobs">Jobs List (Format: Name: P=profit, D=deadline):</label>
-          <input type="text" id="in-jobs" class="custom-input" value="${jobsStr}" />
+        <div class="form-group-custom flex-grow">
+          <label class="custom-label" for="in-jobs">Jobs (P=profit, D=deadline):</label>
+          <input type="text" id="in-jobs" class="custom-input" placeholder="J1: P=100, D=2..." value="${jobsStr}" />
         </div>
       `;
     } else if (algoKey === 'simulation') {
       const def = algoConfig.default;
       const evStr = def.events.map((e, idx) => `C${idx + 1}: Arr=${e.time}, Dur=${e.serviceDuration}`).join('; ');
       formContainer.innerHTML = `
-        <div class="form-group-custom" style="grid-column: span 3;">
-          <label class="custom-label" for="in-sim-events">Arrival Events (Format: CustId: Arr=X, Dur=Y):</label>
-          <input type="text" id="in-sim-events" class="custom-input" value="${evStr}" />
+        <div class="form-group-custom flex-grow">
+          <label class="custom-label" for="in-sim-events">Events (Arr=X, Dur=Y):</label>
+          <input type="text" id="in-sim-events" class="custom-input" placeholder="C1: Arr=0, Dur=3; ..." value="${evStr}" />
         </div>
       `;
     }
+
+    // Allow Enter key inside inputs to trigger Apply & Run immediately
+    formContainer.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          document.getElementById('btn-apply-input')?.click();
+        }
+      });
+    });
   }
 
   function applyPresetData(algoKey, data) {
@@ -676,7 +686,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function parseKnapsackItems(textareaId, fallback) {
     const el = document.getElementById(textareaId);
     if (!el || !el.value.trim()) return [...fallback];
-    const lines = el.value.split('\n');
+    const lines = el.value.split(/[\n;]/).map(s => s.trim()).filter(Boolean);
     const items = [];
     lines.forEach((line, idx) => {
       const vMatch = line.match(/val[=:\s]+(\d+)/i);
@@ -790,8 +800,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Update Step Title and Explanation
     const titleEl = document.getElementById('state-step-title');
     const descEl = document.getElementById('state-step-desc');
+    const descPanelEl = document.getElementById('state-step-desc-panel');
     if (titleEl) titleEl.textContent = state.stepTitle || `Step ${stepIdx + 1}`;
     if (descEl) descEl.textContent = state.explanation || '';
+    if (descPanelEl) descPanelEl.textContent = state.explanation || '';
 
     // 2. Active line in Pseudocode
     highlightPseudocodeLine(state.activeLine);
@@ -1557,6 +1569,27 @@ document.addEventListener('DOMContentLoaded', () => {
         .join(', ');
       const huffInput = document.getElementById('in-huffman');
       if (huffInput) huffInput.value = randomText;
+    } else if (currentAlgo === 'knapsack') {
+      const capInput = document.getElementById('in-knap-cap');
+      if (capInput) capInput.value = Math.floor(Math.random() * 40) + 20;
+    } else if (currentAlgo === 'activitySelection') {
+      const acts = [];
+      for (let i = 0; i < 5; i++) {
+        const s = Math.floor(Math.random() * 10) + 1;
+        const f = s + Math.floor(Math.random() * 4) + 1;
+        acts.push(`(${s}, ${f})`);
+      }
+      const actInput = document.getElementById('in-activities');
+      if (actInput) actInput.value = acts.join(', ');
+    } else if (currentAlgo === 'jobSequencing') {
+      const jobs = [];
+      for (let i = 0; i < 4; i++) {
+        const p = Math.floor(Math.random() * 80) + 20;
+        const d = Math.floor(Math.random() * 3) + 1;
+        jobs.push(`J${i + 1}: P=${p}, D=${d}`);
+      }
+      const jobInput = document.getElementById('in-jobs');
+      if (jobInput) jobInput.value = jobs.join(', ');
     }
     runAlgorithmWithInputs(currentAlgo);
   });
@@ -1600,60 +1633,94 @@ document.addEventListener('DOMContentLoaded', () => {
       : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
   });
 
-  // ================= Sidebar Toggle Controller (3-Line Button) =================
+  // ================= Right Sidebar Controller (3-Line Button & Extend Toggle) =================
   const btnSidebarToggle = document.getElementById('btn-sidebar-toggle');
+  const btnRightPanelExtend = document.getElementById('btn-right-panel-extend');
+  const btnRightPanelClose = document.getElementById('btn-right-panel-close');
+  const rightSidebarOverlay = document.getElementById('right-sidebar-overlay');
+
   const btnSidebarClose = document.getElementById('btn-sidebar-close');
   const sidebarOverlay = document.getElementById('sidebar-overlay');
 
   const isMobileView = () => window.innerWidth <= 1100;
+  let wasLeftSidebarCollapsedBefore = false;
 
-  function updateSidebarUI() {
-    if (isMobileView()) {
-      const isOpen = document.body.classList.contains('sidebar-open');
-      btnSidebarToggle?.classList.toggle('is-active', isOpen);
-      btnSidebarToggle?.classList.remove('is-collapsed');
-      btnSidebarToggle?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      btnSidebarToggle?.setAttribute('title', isOpen ? 'Close Syllabus (Esc)' : 'Open Syllabus');
-    } else {
-      const isCollapsed = document.body.classList.contains('sidebar-collapsed');
-      btnSidebarToggle?.classList.remove('is-active');
-      btnSidebarToggle?.classList.toggle('is-collapsed', isCollapsed);
-      btnSidebarToggle?.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-      btnSidebarToggle?.setAttribute('title', isCollapsed ? 'Expand Syllabus (Ctrl+B)' : 'Collapse Syllabus (Ctrl+B)');
+  function updateRightSidebarUI() {
+    const isExtended = document.body.classList.contains('right-sidebar-extended');
+    btnSidebarToggle?.classList.toggle('is-extended', isExtended);
+    btnSidebarToggle?.setAttribute('aria-expanded', isExtended ? 'true' : 'false');
+    btnSidebarToggle?.setAttribute('title', isExtended ? 'Shrink Right Sidebar (Ctrl+E)' : 'Extend Right Sidebar (Ctrl+E)');
+
+    if (btnRightPanelExtend) {
+      const icon = btnRightPanelExtend.querySelector('.extend-icon');
+      const text = btnRightPanelExtend.querySelector('.extend-text');
+      if (icon) icon.textContent = isExtended ? '⤡' : '⤢';
+      if (text) text.textContent = isExtended ? 'Shrink' : 'Extend';
+      btnRightPanelExtend.setAttribute('title', isExtended ? 'Shrink Right Sidebar (Ctrl+E)' : 'Extend Right Sidebar (Ctrl+E)');
     }
   }
 
-  function toggleSidebar() {
-    if (isMobileView()) {
-      document.body.classList.toggle('sidebar-open');
-    } else {
-      document.body.classList.toggle('sidebar-collapsed');
+  function toggleRightSidebar() {
+    const willExtend = !document.body.classList.contains('right-sidebar-extended');
+    document.body.classList.toggle('right-sidebar-extended', willExtend);
+
+    // On medium desktop screens (1100px - 1350px), auto-collapse left syllabus when right sidebar extends
+    if (window.innerWidth <= 1350 && window.innerWidth > 1100) {
+      if (willExtend) {
+        wasLeftSidebarCollapsedBefore = document.body.classList.contains('sidebar-collapsed');
+        document.body.classList.add('sidebar-collapsed');
+      } else if (!wasLeftSidebarCollapsedBefore) {
+        document.body.classList.remove('sidebar-collapsed');
+      }
     }
-    updateSidebarUI();
+
+    updateRightSidebarUI();
     if (window.soundEngine && typeof window.soundEngine.click === 'function') {
       window.soundEngine.click();
     }
   }
 
-  function closeMobileSidebar() {
-    if (document.body.classList.contains('sidebar-open')) {
-      document.body.classList.remove('sidebar-open');
-      updateSidebarUI();
+  function closeRightSidebar() {
+    if (document.body.classList.contains('right-sidebar-extended')) {
+      document.body.classList.remove('right-sidebar-extended');
+      if (!wasLeftSidebarCollapsedBefore && window.innerWidth <= 1350 && window.innerWidth > 1100) {
+        document.body.classList.remove('sidebar-collapsed');
+      }
+      updateRightSidebarUI();
     }
   }
 
+  // 3-line floating hamburger extends the right sidebar
   btnSidebarToggle?.addEventListener('click', (e) => {
     e.stopPropagation();
-    toggleSidebar();
+    toggleRightSidebar();
   });
 
+  // Right panel extend button
+  btnRightPanelExtend?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleRightSidebar();
+  });
+
+  // Right panel close button
+  btnRightPanelClose?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeRightSidebar();
+  });
+
+  // Backdrop click closes mobile right sidebar
+  rightSidebarOverlay?.addEventListener('click', () => {
+    closeRightSidebar();
+  });
+
+  // Mobile syllabus close button
   btnSidebarClose?.addEventListener('click', (e) => {
     e.stopPropagation();
-    closeMobileSidebar();
+    document.body.classList.remove('sidebar-open');
   });
 
   sidebarOverlay?.addEventListener('click', () => {
-    closeMobileSidebar();
+    document.body.classList.remove('sidebar-open');
   });
 
   // Algorithm navigation links: switch algo and auto-close sidebar on mobile
@@ -1662,7 +1729,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const algo = e.currentTarget.dataset.algo;
       if (algo) loadAlgorithm(algo);
       if (isMobileView()) {
-        closeMobileSidebar();
+        document.body.classList.remove('sidebar-open');
       }
     });
   });
@@ -1704,13 +1771,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // Keyboard navigation shortcuts
   window.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    if (e.key === 'Escape' && isMobileView() && document.body.classList.contains('sidebar-open')) {
-      closeMobileSidebar();
-      return;
+    if (e.key === 'Escape') {
+      if (document.body.classList.contains('right-sidebar-extended')) {
+        closeRightSidebar();
+        return;
+      }
+      if (isMobileView() && document.body.classList.contains('sidebar-open')) {
+        document.body.classList.remove('sidebar-open');
+        return;
+      }
     }
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+    if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'e' || e.key.toLowerCase() === 'b')) {
       e.preventDefault();
-      toggleSidebar();
+      toggleRightSidebar();
       return;
     }
     if (e.code === 'Space') {
